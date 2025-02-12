@@ -1,15 +1,33 @@
+import fs from 'fs'
+
 import path from 'path'
 import { google } from 'googleapis'
 
-const credentialsRelativePath = process.env.GOOGLE_APPLICATION_CREDENTIALS_FILE
+const credentialsRelativePath = process.env.GOOGLE_CREDENTIALS_FILE
 if (!credentialsRelativePath) {
   throw new Error(
-    'The environment variable GOOGLE_APPLICATION_CREDENTIALS_FILE is not set.',
+    'The environment variable GOOGLE_CREDENTIALS_FILE is not set.',
   )
 }
 
+const keyFilePath = path.join(process.cwd(), credentialsRelativePath)
+
+if (!fs.existsSync(keyFilePath)) {
+  const content = process.env.GOOGLE_CREDENTIALS_CONTENT
+  if (!content) {
+    throw new Error(
+      'The environment variable GOOGLE_CREDENTIALS_CONTENT is not set.',
+    )
+  }
+
+  const credentialsObj = JSON.parse(content)
+  fs.writeFileSync(keyFilePath, JSON.stringify(credentialsObj), {
+    encoding: 'utf8',
+  })
+}
+
 const auth = new google.auth.GoogleAuth({
-  keyFile: path.join(process.cwd(), credentialsRelativePath),
+  keyFile: keyFilePath,
   scopes: ['https://www.googleapis.com/auth/drive.readonly'],
 })
 

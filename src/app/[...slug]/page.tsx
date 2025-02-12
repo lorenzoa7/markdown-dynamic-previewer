@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { notFound } from 'next/navigation'
-import { getMarkdownFileByUrlPath } from '@/lib/googleDrive'
+import { getMarkdownFileByUrlPath } from '@/lib/google-drive'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
