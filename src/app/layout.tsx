@@ -6,11 +6,6 @@ import {
 } from 'next/font/google'
 import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
-
 const geistMono = GeistMono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
@@ -36,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable}  ${courierPrime.variable} font-body antialiased`}
+        className={`${geistMono.variable}  ${courierPrime.variable} font-body antialiased`}
       >
         {children}
       </body>

@@ -1,13 +1,21 @@
+import path from 'path'
 import { google } from 'googleapis'
 
+const credentialsRelativePath = process.env.GOOGLE_APPLICATION_CREDENTIALS
+if (!credentialsRelativePath) {
+  throw new Error(
+    'The environment variable GOOGLE_APPLICATION_CREDENTIALS is not set.',
+  )
+}
+
 const auth = new google.auth.GoogleAuth({
-  keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  keyFile: path.join(process.cwd(), credentialsRelativePath),
   scopes: ['https://www.googleapis.com/auth/drive.readonly'],
 })
 
 const drive = google.drive({ version: 'v3', auth })
 
-export interface DriveFile {
+type DriveFile = {
   id: string
   name: string
   mimeType: string
@@ -72,7 +80,9 @@ export async function getMarkdownFileByUrlPath(
 
   const rootFolderId = process.env.GOOGLE_DRIVE_FOLDER_ID
   if (!rootFolderId) {
-    throw new Error('GOOGLE_DRIVE_FOLDER_ID não está definida')
+    throw new Error(
+      'The environment variable GOOGLE_DRIVE_FOLDER_ID is not set.',
+    )
   }
 
   let currentFolderId = rootFolderId

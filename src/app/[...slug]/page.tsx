@@ -7,7 +7,7 @@ import remarkBreaks from 'remark-breaks'
 
 export const dynamic = 'force-dynamic'
 
-interface PageProps {
+type PageProps = {
   params: Promise<{ slug: string[] }>
   searchParams: Promise<{ p?: string }>
 }
