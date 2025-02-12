@@ -1,10 +1,10 @@
 import path from 'path'
 import { google } from 'googleapis'
 
-const credentialsRelativePath = process.env.GOOGLE_APPLICATION_CREDENTIALS
+const credentialsRelativePath = process.env.GOOGLE_APPLICATION_CREDENTIALS_FILE
 if (!credentialsRelativePath) {
   throw new Error(
-    'The environment variable GOOGLE_APPLICATION_CREDENTIALS is not set.',
+    'The environment variable GOOGLE_APPLICATION_CREDENTIALS_FILE is not set.',
   )
 }
 
