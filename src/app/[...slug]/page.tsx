@@ -1,36 +1,46 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// app/[slug]/page.tsx
 import { notFound } from 'next/navigation'
-import { getMarkdownFileBySlugFromPublico } from '@/lib/googleDrive'
+import { getMarkdownFileByUrlPath } from '@/lib/googleDrive'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
 
-// Força a renderização dinâmica a cada requisição
 export const dynamic = 'force-dynamic'
 
 interface PageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string[] }>
+  searchParams: Promise<{ p?: string }>
 }
 
-export default async function EpisodePage({ params }: PageProps) {
-  const { slug } = await Promise.resolve(params)
+export default async function EpisodePage({ params, searchParams }: PageProps) {
+  const { slug } = await params
+  const urlPath = slug.join('/')
 
-  // Busca o arquivo Markdown com base no slug (nome da subpasta)
-  const fileData = await getMarkdownFileBySlugFromPublico(slug)
+  const fileData = await getMarkdownFileByUrlPath(urlPath)
   if (!fileData) {
     notFound()
   }
 
-  const { file, content } = fileData
-  // O título da página será o nome da subpasta (ou do arquivo, removendo a extensão .md)
-  const title = file.name.replace(/\.md$/, '')
+  const { p: urlPassword } = await searchParams
+
+  if (fileData.password) {
+    if (urlPassword !== fileData.password) {
+      notFound()
+    }
+  }
+
+  const title = fileData.file.name.replace(/\.md$/i, '')
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
-      <div className="w-full max-w-4xl">
-        <h1 className="mb-6 text-center text-3xl font-bold">{title}</h1>
-        <article className="prose prose-slate mx-auto max-w-none">
+      <div className="flex w-full max-w-5xl flex-col gap-6">
+        <div className="flex items-center justify-center rounded-lg border-2 border-slate-300 p-6 text-center">
+          <h1 className="text-center font-title text-3xl font-bold ">
+            {title}
+          </h1>
+        </div>
+
+        <article className="prose prose-slate mx-auto max-w-none rounded-lg border-2 border-slate-300 p-6">
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks]}
             components={{
@@ -48,7 +58,7 @@ export default async function EpisodePage({ params }: PageProps) {
               ),
             }}
           >
-            {content}
+            {fileData.content}
           </ReactMarkdown>
         </article>
       </div>

@@ -9,6 +9,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        title: 'var(--font-courier-prime)',
+        body: 'var(--font-geist-mono)',
+      },
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
