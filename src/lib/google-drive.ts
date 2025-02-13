@@ -3,14 +3,18 @@ import fs from 'fs'
 import path from 'path'
 import { google } from 'googleapis'
 
-const credentialsRelativePath = process.env.GOOGLE_CREDENTIALS_FILE
-if (!credentialsRelativePath) {
+const credentialsFileName = process.env.GOOGLE_CREDENTIALS_FILE
+if (!credentialsFileName) {
   throw new Error(
     'The environment variable GOOGLE_CREDENTIALS_FILE is not set.',
   )
 }
 
-const keyFilePath = path.join(process.cwd(), credentialsRelativePath)
+const isVercel = process.env.VERCEL === '1'
+
+const keyFilePath = isVercel
+  ? path.resolve('/tmp', path.basename(credentialsFileName))
+  : path.join(process.cwd(), credentialsFileName)
 
 if (!fs.existsSync(keyFilePath)) {
   const content = process.env.GOOGLE_CREDENTIALS_CONTENT
