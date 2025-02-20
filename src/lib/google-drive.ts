@@ -65,7 +65,7 @@ export async function getFileContent(
   const fullContent = await getFileAsString(fileId)
   const lines = fullContent.split('\n')
 
-  if (lines.length === 0 || lines[0].trim() !== '*$publish*') {
+  if (lines.length === 0 || lines[0].trim() !== '$publish') {
     return null
   }
 
@@ -73,7 +73,7 @@ export async function getFileContent(
   let contentStartIndex = 1
 
   if (lines.length > 1) {
-    const passwordRegex = /^\*\$password=(.*?)\*$/
+    const passwordRegex = /^\$password=(.*)$/
     const match = lines[1].trim().match(passwordRegex)
     if (match) {
       password = match[1]
