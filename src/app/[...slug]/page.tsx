@@ -40,7 +40,7 @@ export default async function EpisodePage({ params, searchParams }: PageProps) {
           </h1>
         </div>
 
-        <article className="prose prose-slate mx-auto max-w-none rounded-lg border-2 border-slate-300 p-6">
+        <article className="prose prose-slate mx-auto w-full max-w-none rounded-lg border-2 border-slate-300 p-6">
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks]}
             components={{
