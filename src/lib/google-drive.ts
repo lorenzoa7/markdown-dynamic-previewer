@@ -155,3 +155,65 @@ export async function getMarkdownFileByUrlPath(
     password: result.password,
   }
 }
+
+export async function getFaviconDataUrl(): Promise<string | null> {
+  function getMimeType(
+    mimeType: string | undefined,
+    fileName: string | undefined,
+  ) {
+    if (mimeType) return mimeType
+    if (fileName?.endsWith('.png')) return 'image/png'
+    if (fileName?.endsWith('.ico')) return 'image/x-icon'
+    return 'application/octet-stream'
+  }
+
+  const rootFolderId = process.env.GOOGLE_DRIVE_FOLDER_ID
+  if (!rootFolderId) {
+    throw new Error(
+      'The environment variable GOOGLE_DRIVE_FOLDER_ID is not set.',
+    )
+  }
+
+  const configRes = await drive.files.list({
+    q: `'${rootFolderId}' in parents and name = '.markdown-config' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`,
+    fields: 'files(id, name)',
+  })
+
+  const configFolders = configRes.data.files || []
+  if (configFolders.length === 0) {
+    return null
+  }
+
+  const configFolderId = configFolders[0].id
+
+  const faviconRes = await drive.files.list({
+    q: `'${configFolderId}' in parents and (name = 'favicon.ico' or name = 'favicon.png') and trashed = false`,
+    fields: 'files(id, name, mimeType)',
+  })
+
+  const faviconFiles = faviconRes.data.files || []
+  if (faviconFiles.length === 0) {
+    return null
+  }
+
+  const faviconFile = faviconFiles[0]
+
+  const buffer = await new Promise<Buffer>((resolve, reject) => {
+    drive.files.get(
+      { fileId: faviconFile.id ?? undefined, alt: 'media' },
+      { responseType: 'arraybuffer' },
+      (err, res) => {
+        if (err) return reject(err)
+        resolve(Buffer.from(res?.data as ArrayBuffer))
+      },
+    )
+  })
+
+  const base64 = buffer.toString('base64')
+  const mimeType = getMimeType(
+    faviconFile.mimeType ?? undefined,
+    faviconFile.name ?? undefined,
+  )
+
+  return `data:${mimeType};base64,${base64}`
+}

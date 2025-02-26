@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { notFound } from 'next/navigation'
-import { getMarkdownFileByUrlPath } from '@/lib/google-drive'
+import { getFaviconDataUrl, getMarkdownFileByUrlPath } from '@/lib/google-drive'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
+import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,17 +15,23 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
+
+  const metadata: Metadata = {}
   const urlPath = slug.join('/')
 
   const fileData = await getMarkdownFileByUrlPath(urlPath)
-  if (!fileData) {
-    return {}
+  if (fileData) {
+    metadata.title = fileData.file.name.replace(/\.md$/i, '')
   }
-  const title = fileData.file.name.replace(/\.md$/i, '')
 
-  return {
-    title,
+  const faviconDataUrl = await getFaviconDataUrl()
+  if (faviconDataUrl) {
+    metadata.icons = {
+      icon: faviconDataUrl,
+    }
   }
+
+  return metadata
 }
 
 export default async function EpisodePage({ params, searchParams }: PageProps) {
