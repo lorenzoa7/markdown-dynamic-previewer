@@ -12,6 +12,21 @@ type PageProps = {
   searchParams: Promise<{ p?: string }>
 }
 
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params
+  const urlPath = slug.join('/')
+
+  const fileData = await getMarkdownFileByUrlPath(urlPath)
+  if (!fileData) {
+    return {}
+  }
+  const title = fileData.file.name.replace(/\.md$/i, '')
+
+  return {
+    title,
+  }
+}
+
 export default async function EpisodePage({ params, searchParams }: PageProps) {
   const { slug } = await params
   const urlPath = slug.join('/')
