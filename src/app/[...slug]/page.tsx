@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
 import { Metadata } from 'next'
+import { DownloadButton } from '@/components/download-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -51,15 +52,21 @@ export default async function EpisodePage({ params, searchParams }: PageProps) {
     }
   }
 
-  const title = fileData.file.name.replace(/\.md$/i, '')
+  const { file, content } = fileData
+
+  const title = file.name.replace(/\.md$/i, '')
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6 pt-2">
       <div className="flex w-full max-w-5xl flex-col gap-6">
-        <div className="flex items-center justify-center rounded-lg border-2 border-slate-300 p-6 text-center">
-          <h1 className="text-center font-title text-3xl font-bold ">
-            {title}
-          </h1>
+        <div className="flex w-full flex-col items-end gap-0.5">
+          <DownloadButton content={content} filename={`${title}.md`} />
+
+          <div className="flex w-full items-center justify-center rounded-lg border-2 border-slate-300 p-6 text-center">
+            <h1 className="text-center font-title text-3xl font-bold ">
+              {title}
+            </h1>
+          </div>
         </div>
 
         <article className="prose prose-slate mx-auto w-full max-w-none rounded-lg border-2 border-slate-300 p-6">
